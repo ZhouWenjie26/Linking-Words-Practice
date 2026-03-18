@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linking Words Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F0EDE8;
+  --surface: #FAF8F5;
+  --card: #FFFFFF;
+  --ink: #1C1917;
+  --ink2: #4A4540;
+  --ink3: #8C857E;
+  --border: #E5DFD9;
+  --accent: #C05A2A;
+  --accent-light: #FAF0EA;
+
+  --green: #2A6E42;
+  --green-bg: #EAF5EE;
+  --red: #B83A3A;
+  --red-bg: #FAEAEA;
+  --amber: #8A5C16;
+  --amber-bg: #FDF3E2;
+  --blue: #1A5EA0;
+  --blue-bg: #EAF2FB;
+  --purple: #6355C4;
+  --purple-bg: #F0EEFF;
+
+  --cat-addition:    #6355C4;
+  --cat-contrast:    #C05A2A;
+  --cat-cause:       #2A7A50;
+  --cat-sequence:    #1A5EA0;
+  --cat-example:     #9A6010;
+  --cat-emphasis:    #A02868;
+  --cat-conclusion:  #3A7A28;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+.shell { max-width: 900px; margin: 0 auto; padding: 36px 24px 80px; }
+
+/* HEADER */
+.hdr { margin-bottom: 32px; }
+.hdr-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.hdr-title { font-family: 'Lora', serif; font-size: 34px; font-weight: 600; color: var(--ink); line-height: 1.15; margin-bottom: 6px; }
+.hdr-desc { font-size: 14px; color: var(--ink3); line-height: 1.6; max-width: 520px; margin-bottom: 20px; }
+.stats-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.stat-pill {
+  background: var(--card); border: 1px solid var(--border); border-radius: 24px;
+  padding: 6px 16px; font-size: 12px; font-weight: 500; color: var(--ink2);
+  display: flex; align-items: center; gap: 6px;
+}
+.stat-pill b { color: var(--ink); font-weight: 600; }
+.stat-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink3); }
+.stat-pill .dot.green { background: var(--green); }
+
+/* TABS */
+.tabs {
+  display: flex; gap: 2px; background: var(--card);
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 4px; margin-bottom: 28px; overflow-x: auto;
+}
+.tab-btn {
+  flex: 1; min-width: 90px; padding: 9px 16px; border: none;
+  border-radius: 10px; background: transparent;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--ink3); cursor: pointer; transition: all .18s; white-space: nowrap;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.tab-btn:hover { color: var(--ink); background: var(--bg); }
+.tab-btn.active { background: var(--ink); color: #fff; }
+
+/* FILTER BAR */
+.filter-bar { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 22px; }
+.filter-chip {
+  padding: 5px 14px; border-radius: 20px; border: 1.5px solid var(--border);
+  font-size: 12px; font-weight: 500; color: var(--ink2); background: var(--card);
+  cursor: pointer; transition: all .15s;
+}
+.filter-chip:hover { border-color: var(--ink3); color: var(--ink); }
+.filter-chip.active { border-color: transparent; color: #fff; }
+.filter-chip[data-cat="all"].active { background: var(--ink); }
+.filter-chip[data-cat="Addition"].active { background: var(--cat-addition); }
+.filter-chip[data-cat="Contrast"].active { background: var(--cat-contrast); }
+.filter-chip[data-cat="Cause/Effect"].active { background: var(--cat-cause); }
+.filter-chip[data-cat="Sequence"].active { background: var(--cat-sequence); }
+.filter-chip[data-cat="Example"].active { background: var(--cat-example); }
+.filter-chip[data-cat="Emphasis"].active { background: var(--cat-emphasis); }
+.filter-chip[data-cat="Conclusion"].active { background: var(--cat-conclusion); }
+
+/* PANELS */
+.panel { display: none; }
+.panel.active { display: block; animation: fadeUp .22s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* ══ FLASHCARD ══ */
+.fc-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; gap: 12px;
+}
+.fc-counter { font-size: 13px; color: var(--ink3); font-weight: 500; min-width: 50px; text-align: right; }
+.fc-progress { flex: 1; height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.fc-progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .3s ease; }
+.fc-nav-btn {
+  width: 38px; height: 38px; border-radius: 9px; border: 1px solid var(--border);
+  background: var(--card); color: var(--ink); font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.fc-nav-btn:hover:not(:disabled) { background: var(--bg); border-color: var(--ink3); }
+.fc-nav-btn:disabled { opacity: .3; cursor: default; }
+
+.card-scene { perspective: 1200px; height: 420px; cursor: pointer; user-select: none; }
+.card-inner {
+  position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d; transition: transform .55s cubic-bezier(.4,0,.2,1);
+}
+.card-scene.flipped .card-inner { transform: rotateY(180deg); }
+.card-face {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  -webkit-backface-visibility: hidden; border-radius: 18px;
+  border: 1px solid var(--border); background: var(--card);
+  display: flex; flex-direction: column;
+}
+.card-back { transform: rotateY(180deg); }
+
+/* Front face */
+.card-front { align-items: center; justify-content: center; padding: 40px; text-align: center; }
+.card-cat-badge {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  padding: 4px 14px; border-radius: 20px; margin-bottom: 28px; color: #fff;
+}
+.card-word {
+  font-family: 'Lora', serif; font-size: 54px; font-weight: 600;
+  color: var(--ink); line-height: 1.1; margin-bottom: 10px;
+}
+.card-reg-badge {
+  font-size: 12px; font-weight: 500; padding: 4px 14px; border-radius: 20px; margin-bottom: 20px;
+}
+.card-meaning {
+  font-size: 14px; color: var(--ink3); font-style: italic; margin-bottom: 4px;
+}
+.card-tap-hint {
+  position: absolute; bottom: 22px;
+  font-size: 12px; color: var(--ink3);
+  display: flex; align-items: center; gap: 5px;
+}
+.card-tap-hint svg { opacity: .5; }
+
+/* Back face */
+.card-back { padding: 28px 32px; overflow-y: auto; justify-content: flex-start; }
+.back-section { margin-bottom: 18px; }
+.back-section:last-child { margin-bottom: 0; }
+.section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink3); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.pos-badge {
+  display: inline-block; font-size: 12px; font-weight: 500;
+  background: var(--amber-bg); color: var(--amber); border-radius: 6px;
+  padding: 5px 12px; font-family: 'DM Mono', monospace;
+}
+.note-text { font-size: 13.5px; color: var(--ink2); line-height: 1.65; }
+.key-diff {
+  background: var(--accent-light); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0; padding: 10px 14px; margin-top: 8px;
+  font-size: 13px; color: var(--ink2); line-height: 1.6;
+}
+.key-diff strong { color: var(--accent); }
+.eg-list { display: flex; flex-direction: column; gap: 9px; }
+.eg-item {
+  font-size: 13px; line-height: 1.65; padding: 11px 15px; border-radius: 9px; border-left: 3px solid;
+}
+.eg-item.academic { background: var(--purple-bg); border-color: var(--purple); color: #2A245A; }
+.eg-item.daily { background: var(--green-bg); border-color: var(--green); color: #1A3D26; }
+.eg-type { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 4px; }
+.eg-type.a { color: var(--purple); }
+.eg-type.d { color: var(--green); }
+
+/* ══ QUIZ ══ */
+.quiz-mode-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 22px; }
+.qmode-btn {
+  padding: 7px 16px; border-radius: 20px; border: 1.5px solid var(--border);
+  background: var(--card); font-size: 12px; font-weight: 500; color: var(--ink2);
+  cursor: pointer; transition: all .15s;
+}
+.qmode-btn:hover { border-color: var(--ink3); color: var(--ink); }
+.qmode-btn.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+.quiz-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.quiz-mode-name {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--ink3);
+}
+.quiz-score-disp { font-size: 14px; font-weight: 600; color: var(--ink); }
+.quiz-bar-wrap { height: 5px; background: var(--border); border-radius: 5px; margin-bottom: 28px; overflow: hidden; }
+.quiz-bar-fill { height: 100%; border-radius: 5px; background: var(--green); transition: width .35s ease; }
+
+.quiz-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 32px; margin-bottom: 18px; animation: fadeUp .2s ease;
+}
+.q-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--ink3); margin-bottom: 14px; }
+.q-sentence {
+  font-family: 'Lora', serif; font-size: 21px; line-height: 1.6; color: var(--ink); margin-bottom: 8px;
+}
+.q-blank {
+  display: inline-block;
+  min-width: 100px;
+  height: 1.2em;
+  border-bottom: 2.5px solid var(--ink);
+  vertical-align: text-bottom;
+  margin: 0 4px 0 2px;
+  background: transparent;
+}
+.q-subhint { font-size: 13px; color: var(--ink3); font-style: italic; margin-top: 6px; }
+.q-context-box {
+  background: var(--bg); border-radius: 8px; padding: 12px 16px;
+  font-size: 13px; color: var(--ink2); line-height: 1.6; margin-bottom: 16px;
+  border-left: 3px solid var(--border);
+}
+.q-context-box strong { color: var(--ink); }
+
+.opts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+.opt-btn {
+  padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 10px;
+  background: var(--card); font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13.5px; font-weight: 500; color: var(--ink); cursor: pointer;
+  text-align: left; transition: all .15s; line-height: 1.4;
+}
+.opt-btn:hover:not(:disabled) { border-color: var(--ink); background: var(--bg); transform: translateY(-1px); }
+.opt-btn.correct { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+.opt-btn.wrong { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+.opt-btn:disabled { cursor: default; transform: none; }
+.opt-letter {
+  display: inline-block; width: 22px; height: 22px; border-radius: 6px;
+  background: var(--bg); font-size: 11px; font-weight: 700;
+  text-align: center; line-height: 22px; margin-right: 8px; color: var(--ink3); flex-shrink: 0;
+}
+
+.feedback-panel {
+  border-radius: 12px; padding: 16px 20px; display: none; margin-top: 4px;
+  animation: fadeUp .15s ease;
+}
+.feedback-panel.show { display: block; }
+.feedback-panel.correct { background: var(--green-bg); border: 1px solid #b5dfbf; }
+.feedback-panel.wrong { background: var(--red-bg); border: 1px solid #f0bebe; }
+.fb-top { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.fb-top.correct { color: var(--green); }
+.fb-top.wrong { color: var(--red); }
+.fb-detail { font-size: 13px; line-height: 1.65; color: var(--ink2); }
+.fb-detail strong { color: var(--ink); }
+.fb-eg { font-size: 13px; color: var(--ink2); font-style: italic; margin-top: 6px; line-height: 1.6; }
+
+.quiz-actions { display: flex; justify-content: flex-end; margin-top: 14px; }
+.next-btn {
+  padding: 10px 28px; background: var(--ink); color: #fff; border: none;
+  border-radius: 9px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity .15s;
+  display: none; align-items: center; gap: 8px;
+}
+.next-btn.show { display: flex; }
+.next-btn:hover { opacity: .85; }
+
+/* RESULT */
+.result-screen {
+  background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+  padding: 64px 40px; text-align: center; display: none;
+}
+.result-screen.show { display: block; animation: fadeUp .3s ease; }
+.result-medal { font-size: 72px; margin-bottom: 16px; }
+.result-title { font-family: 'Lora', serif; font-size: 36px; font-weight: 600; margin-bottom: 8px; }
+.result-sub { font-size: 15px; color: var(--ink2); line-height: 1.6; max-width: 380px; margin: 0 auto 32px; }
+.result-big { font-family: 'Lora', serif; font-size: 80px; font-weight: 400; line-height: 1; color: var(--ink); margin-bottom: 4px; }
+.result-small { font-size: 13px; color: var(--ink3); margin-bottom: 36px; }
+.result-breakdown { display: flex; justify-content: center; gap: 24px; margin-bottom: 36px; flex-wrap: wrap; }
+.breakdown-item { text-align: center; }
+.breakdown-num { font-family: 'Lora', serif; font-size: 28px; font-weight: 600; }
+.breakdown-label { font-size: 11px; color: var(--ink3); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+.retry-btn {
+  padding: 13px 36px; background: var(--ink); color: #fff; border: none;
+  border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px; font-weight: 500; cursor: pointer; transition: opacity .15s;
+}
+.retry-btn:hover { opacity: .85; }
+
+/* ══ BROWSE ══ */
+.browse-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.browse-search-bar {
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.browse-search {
+  flex: 1; border: none; background: var(--bg); border-radius: 8px;
+  padding: 8px 14px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; color: var(--ink); outline: none;
+}
+.browse-search::placeholder { color: var(--ink3); }
+.browse-count { font-size: 12px; color: var(--ink3); white-space: nowrap; }
+
+.browse-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.browse-table th {
+  background: var(--ink); color: #fff; font-weight: 500;
+  padding: 10px 16px; text-align: left; font-size: 11px;
+  letter-spacing: .07em; text-transform: uppercase;
+}
+.browse-table td { padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.browse-table tr.data-row:last-child td { border-bottom: none; }
+.browse-table tr.data-row { cursor: pointer; transition: background .12s; }
+.browse-table tr.data-row:hover td { background: var(--bg); }
+.bt-word { font-weight: 600; font-size: 14.5px; font-family: 'Lora', serif; }
+.bt-pos { font-size: 12px; color: var(--ink2); font-style: italic; }
+.bt-reg { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.bt-reg.Academic { background: var(--purple-bg); color: var(--purple); }
+.bt-reg.Both { background: var(--blue-bg); color: var(--blue); }
+.bt-reg.Daily { background: var(--green-bg); color: var(--green); }
+.bt-note { font-size: 12.5px; color: var(--ink2); line-height: 1.5; }
+.bt-cat-tag { font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+.bt-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.expand-row { display: none; }
+.expand-row td { padding: 0 !important; background: var(--surface) !important; }
+.expand-inner { padding: 18px 20px 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.expand-block-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
+.expand-block-title.a { color: var(--purple); }
+.expand-block-title.d { color: var(--green); }
+.expand-eg-item {
+  font-size: 12.5px; line-height: 1.7; padding: 10px 14px;
+  border-radius: 9px; margin-bottom: 8px;
+}
+.expand-eg-item.a { background: var(--purple-bg); border-left: 3px solid var(--purple); color: #2A245A; }
+.expand-eg-item.d { background: var(--green-bg); border-left: 3px solid var(--green); color: #1A3D26; }
+
+/* ══ GUIDE PANEL ══ */
+.guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.guide-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 22px 24px;
+}
+.guide-pos-tag {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em;
+  padding: 4px 12px; border-radius: 20px; margin-bottom: 14px;
+  background: var(--ink); color: #fff;
+}
+.guide-rule { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+.guide-explanation { font-size: 13px; color: var(--ink2); line-height: 1.65; margin-bottom: 14px; }
+.guide-words { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.guide-word-chip {
+  font-size: 12px; font-weight: 500; padding: 3px 10px;
+  border-radius: 16px; background: var(--bg); color: var(--ink2);
+  border: 1px solid var(--border); font-family: 'DM Mono', monospace;
+}
+.guide-example {
+  font-size: 12.5px; color: var(--ink2); font-style: italic;
+  line-height: 1.65; background: var(--bg); border-radius: 8px;
+  padding: 10px 14px; border-left: 3px solid var(--border);
+}
+.guide-comma-note {
+  font-size: 12px; color: var(--amber); font-weight: 500; margin-top: 8px;
+  display: flex; align-items: flex-start; gap: 5px;
+}
+
+@media (max-width: 640px) {
+  .opts-grid { grid-template-columns: 1fr; }
+  .expand-inner { grid-template-columns: 1fr; }
+  .guide-grid { grid-template-columns: 1fr; }
+  .card-word { font-size: 38px; }
+  .q-sentence { font-size: 17px; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-eyebrow">English Writing Skills</div>
+    <div class="hdr-title">Linking Words Practice</div>
+    <div class="hdr-desc">Learn 40 essential linking words used in academic writing and daily conversation — with clear notes on meaning, position in a sentence, and real examples.</div>
+    <div class="stats-row">
+      <div class="stat-pill"><span class="dot"></span> Practiced <b id="stat-practiced">0</b></div>
+      <div class="stat-pill"><span class="dot green"></span> Correct <b id="stat-correct">0</b></div>
+      <div class="stat-pill">Accuracy <b id="stat-rate">—</b></div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="flash">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Flashcards
+    </button>
+    <button class="tab-btn" data-tab="quiz">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 6.5C6.5 5.7 7.2 5 8 5C8.8 5 9.5 5.7 9.5 6.5C9.5 7.3 8 8 8 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="11" r=".7" fill="currentColor"/></svg>
+      Quiz
+    </button>
+    <button class="tab-btn" data-tab="browse">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><line x1="2" y1="4" x2="14" y2="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Browse
+    </button>
+    <button class="tab-btn" data-tab="guide">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v10H3z" stroke="currentColor" stroke-width="1.5" rx="2"/><line x1="6" y1="6" x2="10" y2="6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="9" x2="10" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Position Guide
+    </button>
+  </div>
+
+  <!-- ══════ FLASHCARD PANEL ══════ -->
+  <div class="panel active" id="panel-flash">
+    <div class="filter-bar" id="flash-filters"></div>
+    <div class="fc-toolbar">
+      <button class="fc-nav-btn" id="fc-prev">←</button>
+      <div class="fc-progress"><div class="fc-progress-fill" id="fc-bar" style="width:0%"></div></div>
+      <span class="fc-counter" id="fc-counter">1 / 40</span>
+      <button class="fc-nav-btn" id="fc-next">→</button>
+    </div>
+    <div class="card-scene" id="card-scene">
+      <div class="card-inner" id="card-inner">
+        <div class="card-face card-front" id="card-front"></div>
+        <div class="card-face card-back" id="card-back"></div>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:14px;font-size:12px;color:var(--ink3)">Click card to flip · Arrow keys to navigate · Space to flip</p>
+  </div>
+
+  <!-- ══════ QUIZ PANEL ══════ -->
+  <div class="panel" id="panel-quiz">
+    <div class="quiz-mode-row">
+      <button class="qmode-btn active" data-qmode="fillblank">Fill in the blank</button>
+      <button class="qmode-btn" data-qmode="meaning">Word → Meaning</button>
+      <button class="qmode-btn" data-qmode="meaning2word">Meaning → Word</button>
+      <button class="qmode-btn" data-qmode="category">Find the category</button>
+      <button class="qmode-btn" data-qmode="position">Sentence position</button>
+    </div>
+    <div class="filter-bar" id="quiz-filters"></div>
+    <div class="quiz-topbar">
+      <span class="quiz-mode-name" id="qmode-label">Fill in the blank</span>
+      <span class="quiz-score-disp" id="quiz-score-disp">0 / 0</span>
+    </div>
+    <div class="quiz-bar-wrap"><div class="quiz-bar-fill" id="quiz-bar" style="width:0%"></div></div>
+    <div id="quiz-area"></div>
+    <div class="result-screen" id="result-screen">
+      <div class="result-medal" id="result-medal">🎉</div>
+      <div class="result-title" id="result-title">All done!</div>
+      <div class="result-sub" id="result-sub"></div>
+      <div class="result-big" id="result-big"></div>
+      <div class="result-small">correct answers out of <span id="result-total"></span> questions</div>
+      <div class="result-breakdown" id="result-breakdown"></div>
+      <button class="retry-btn" id="retry-btn">Try again</button>
+    </div>
+  </div>
+
+  <!-- ══════ BROWSE PANEL ══════ -->
+  <div class="panel" id="panel-browse">
+    <div class="filter-bar" id="browse-filters"></div>
+    <div class="browse-wrap">
+      <div class="browse-search-bar">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="var(--ink3)" stroke-width="1.5"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke="var(--ink3)" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input class="browse-search" id="browse-search" placeholder="Search expressions…" oninput="renderBrowse()">
+        <span class="browse-count" id="browse-count"></span>
+      </div>
+      <table class="browse-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Expression</th>
+            <th>Register</th>
+            <th>Position in sentence</th>
+            <th>Usage note</th>
+          </tr>
+        </thead>
+        <tbody id="browse-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════ POSITION GUIDE PANEL ══════ -->
+  <div class="panel" id="panel-guide">
+  <p style="font-size:14px;color:var(--ink2);line-height:1.7;margin-bottom:22px;max-width:640px">
+    One of the biggest challenges with linking words is knowing <strong>where to place them</strong> in a sentence. The same word can often go in different positions — and punctuation (especially commas) changes with each position. Many words appear in more than one section below because they work in multiple positions.
+  </p>
+  <div class="guide-grid" id="guide-grid"></div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════
+const WORDS = [
+  { cat:"Addition", word:"Furthermore", reg:"Academic",
+    meaning:"Used to add a stronger or more important point on top of what was just said.",
+    pos:"Sentence-initial (most common) OR mid-sentence (between two commas)",
+    pos_detail:"Start: 'Furthermore, the results suggest…' | Mid: 'The results, furthermore, suggest a stronger pattern.'",
+    note:"More formal than 'also' or 'in addition'. Use when the next point is stronger or more significant than the previous one.",
+    key_diff:"Furthermore > Moreover > In addition (increasing formality and emphasis)",
+    contexts:[
+      {ctx:"The intervention significantly reduced anxiety symptoms.", sent:"Furthermore, participants reported improved sleep quality."},
+      {ctx:"Higher income inequality is associated with lower social trust.", sent:"Furthermore, the relationship holds across different cultural contexts."},
+      {ctx:"The policy reduced carbon emissions by 12%.", sent:"Furthermore, compliance costs were lower than projected."},
+    ],
+    acad:["Furthermore, the longitudinal data reveal a sustained decline in civic participation.", "The regression model accounts for socioeconomic status; furthermore, it controls for prior achievement."],
+    daily:["I finished the report early. Furthermore, I proofread it twice before sending.", "The apartment is spacious. Furthermore, it's only a 10-minute walk to the station."] },
+
+  { cat:"Addition", word:"Moreover", reg:"Academic",
+    meaning:"Used to add a point that is even more important or convincing than the last.",
+    pos:"Sentence-initial (most common) OR mid-sentence (between two commas)",
+    pos_detail:"Start: 'Moreover, previous studies…' | Mid: 'The model, moreover, demonstrates superior fit.'",
+    note:"Slightly stronger than 'furthermore'. Signals: 'not only that — here is an even better reason'. Very common in academic papers.",
+    key_diff:"'Moreover' often introduces the most important supporting point in a paragraph.",
+    contexts:[
+      {ctx:"The treatment group showed significant improvement in depression scores.", sent:"Moreover, the effect persisted at the six-month follow-up."},
+      {ctx:"Automation has displaced workers in manufacturing sectors.", sent:"Moreover, the displacement disproportionately affects lower-skilled workers."},
+      {ctx:"The new drug reduced tumor size in 70% of patients.", sent:"Moreover, it produced fewer side effects than the current standard treatment."},
+    ],
+    acad:["Moreover, the meta-analysis reveals consistent effects across 23 independent studies.", "The political polarization index has risen sharply; moreover, it shows no sign of reversing."],
+    daily:["The apartment is spacious. Moreover, it's only a 10-minute walk to campus.", "She speaks three languages. Moreover, she's fluent in all of them."] },
+
+  { cat:"Addition", word:"In addition", reg:"Both",
+    meaning:"Used to add extra information or another point.",
+    pos:"Sentence-initial OR mid-sentence (in addition to + noun)",
+    pos_detail:"At the start: 'In addition, …' | Before a noun: 'In addition to X, …'",
+    note:"More neutral than 'furthermore' or 'moreover'. Works in both formal writing and everyday speech.",
+    key_diff:"'In addition to' is a preposition — it must be followed by a noun/noun phrase, not a full sentence.",
+    contexts:[
+      {ctx:"The study collected survey data from 1,200 participants.", sent:"In addition, qualitative interviews were conducted with a subsample of 30."},
+      {ctx:"Regular exercise reduces the risk of cardiovascular disease.", sent:"In addition, it is associated with improved mental health outcomes."},
+      {ctx:"The company reduced its energy consumption by 20%.", sent:"In addition, it switched to renewable sources for 40% of its electricity."},
+    ],
+    acad:["In addition to self-report measures, the study included physiological indicators of stress.", "The model controls for age and gender; in addition, it accounts for regional variation."],
+    daily:["In addition to coffee, I'd also like some water, please.", "She works full-time. In addition, she takes evening classes twice a week."] },
+
+  { cat:"Addition", word:"Besides", reg:"Both",
+    meaning:"Used to add a point, often with a tone of 'and there's another thing…'",
+    pos:"Sentence-initial OR mid-sentence (besides + noun)",
+    pos_detail:"At the start: casual tone. Before a noun: 'Besides X, …'",
+    note:"In conversation, 'besides' often sounds like 'anyway' or 'plus'. In writing, use 'in addition' or 'furthermore' for a more formal tone.",
+    key_diff:"'Besides' can carry a slightly dismissive tone in speech: 'I don't want to go. Besides, it's raining.'",
+    contexts:[
+      {ctx:"I'm not sure this approach is the best choice.", sent:"Besides, we don't have enough time to implement it properly."},
+      {ctx:"The qualitative findings add depth to the quantitative results.", sent:"Besides the main themes, several unexpected patterns emerged."},
+    ],
+    acad:["Besides statistical significance, researchers must also report effect sizes and confidence intervals.", "Besides self-selection bias, the study faces threats from attrition."],
+    daily:["I don't want to go out tonight. Besides, it's raining.", "Besides being affordable, the restaurant is also surprisingly good."] },
+
+  { cat:"Addition", word:"Also", reg:"Both",
+    meaning:"Used to add more information, similar to 'too' or 'as well'.",
+    pos:"Mid-sentence (before main verb) OR sentence-initial (informal only)",
+    pos_detail:"Mid-sentence (most common): 'She also completed the survey.' | Sentence-initial (informal): 'Also, don't forget your ID.' — avoid in formal academic writing.",
+    note:"The most flexible addition word. In formal writing, it sits before the main verb. Sentence-initial 'Also,' is acceptable in emails but not in academic papers.",
+    key_diff:"'Also' at sentence start is informal. In formal writing, use 'In addition' or 'Furthermore' instead.",
+    contexts:[
+      {ctx:"The experiment measured reaction time.", sent:"Participants were also asked to rate their confidence after each trial."},
+      {ctx:"The policy reduced unemployment in urban areas.", sent:"It also improved housing stability in rural regions."},
+    ],
+    acad:["The survey also included an open-ended question about perceived barriers to healthcare access.", "Neuroticism also predicted anxiety symptoms over and above the other personality traits."],
+    daily:["I'll have the pasta. Can I also get a side salad?", "Also, don't forget to bring your ID tomorrow."] },
+
+  { cat:"Addition", word:"Not only … but also", reg:"Both",
+    meaning:"Used to emphasize that two things are both true, with the second being more surprising or important.",
+    pos:"Sentence-initial (inverted word order!) OR mid-sentence",
+    pos_detail:"At the start: 'Not only did she…, but she also…' (verb before subject!) | Mid: 'She not only X but also Y'",
+    note:"When 'Not only' starts a sentence, you must invert the subject and auxiliary verb (inversion). This grammar rule is obligatory in formal writing.",
+    key_diff:"Inversion: 'Not only DID the intervention reduce symptoms, but it also…' — 'did' must come before the subject.",
+    contexts:[
+      {ctx:"The public health campaign had several positive outcomes.", sent:"Not only did vaccination rates increase, but it also reduced vaccine hesitancy."},
+      {ctx:"Economic sanctions affected the country in multiple ways.", sent:"They not only reduced export revenue but also destabilized the currency."},
+    ],
+    acad:["Not only did the new policy reduce emissions, but it also created 15,000 jobs in the renewable sector.", "The therapy not only alleviated depressive symptoms but also improved quality of life."],
+    daily:["She's not only smart but also incredibly kind.", "Not only was he late, but he also forgot to bring the documents."] },
+
+  { cat:"Contrast", word:"However", reg:"Both",
+    meaning:"Used to introduce information that contrasts with or is surprising given what was just said.",
+    pos:"Sentence-initial (most common) OR mid-sentence (between two commas)",
+    pos_detail:"Start: 'However, the results…' | Mid: 'The results, however, were…'",
+    note:"The most widely used contrast word. Both positions are correct. Mid-sentence adds variety and emphasis.",
+    key_diff:"Do NOT use 'however' as a conjunction between clauses: ✗ 'I tried however I failed.' ✓ 'I tried. However, I failed.'",
+    contexts:[
+      {ctx:"Early studies suggested that social media use was linked to depression.", sent:"However, more recent meta-analyses have found much weaker and inconsistent effects."},
+      {ctx:"The economic model predicted a rapid recovery after the recession.", sent:"However, unemployment remained elevated for several years."},
+      {ctx:"The drug performed well in laboratory conditions.", sent:"The clinical trial results, however, were far less encouraging."},
+    ],
+    acad:["However, the cross-sectional design limits causal interpretation of these findings.", "The correlation was strong; the effect size, however, was too small to be clinically meaningful."],
+    daily:["I wanted to go hiking. However, it started raining.", "The food was excellent. The service, however, was painfully slow."] },
+
+  { cat:"Contrast", word:"Nevertheless", reg:"Academic",
+    meaning:"Used to say something is still true or valid despite what was just mentioned.",
+    pos:"Sentence-initial (most common) OR mid-sentence (between two commas)",
+    pos_detail:"Start: 'Nevertheless, the study…' | Mid: 'The study, nevertheless, contributes…'",
+    note:"More formal than 'however'. It fully accepts the concession and says: 'Yes, this is a real problem — but the conclusion still holds.'",
+    key_diff:"'Nevertheless' accepts a concession more fully than 'however': 'Yes, there are limits. Nevertheless, the findings are useful.'",
+    contexts:[
+      {ctx:"The sample size was relatively small and may limit generalizability.", sent:"Nevertheless, the findings are consistent with prior longitudinal research."},
+      {ctx:"Critics raised valid concerns about the methodology.", sent:"Nevertheless, the policy was implemented on schedule."},
+    ],
+    acad:["The study relied on self-reported data, which is subject to recall bias; nevertheless, the patterns are compelling.", "Nevertheless, the theoretical contribution of this work extends well beyond the immediate empirical findings."],
+    daily:["The task was incredibly challenging. Nevertheless, we finished on time.", "He was exhausted after the long journey. Nevertheless, he kept going."] },
+
+  { cat:"Contrast", word:"Nonetheless", reg:"Academic",
+    meaning:"Used to say something remains true or important despite an opposing point.",
+    pos:"Sentence-initial (most common) OR mid-sentence (between two commas)",
+    pos_detail:"Start: 'Nonetheless, the evidence supports…' | Mid: 'The evidence, nonetheless, supports the hypothesis.'",
+    note:"Almost identical to 'nevertheless'. Slightly less formal. Either is correct — just be consistent in one piece of writing.",
+    key_diff:"'Nevertheless' vs 'Nonetheless': They are interchangeable. Don't use both in the same paragraph.",
+    contexts:[
+      {ctx:"The replication sample differed in several demographic characteristics.", sent:"Nonetheless, the core findings replicated across both groups."},
+      {ctx:"Randomized assignment was not feasible in this naturalistic setting.", sent:"Nonetheless, several design features helped reduce confounding."},
+    ],
+    acad:["The experiment lacked ecological validity; nonetheless, it provides important mechanistic insights.", "Measurement invariance was only partially supported; nonetheless, comparisons were conducted with appropriate caution."],
+    daily:["It was cold and windy. Nonetheless, they decided to go for a walk.", "The plan had some obvious flaws. Nonetheless, it was unanimously approved."] },
+
+  { cat:"Contrast", word:"On the other hand", reg:"Both",
+    meaning:"Used to present the opposite or contrasting side of an argument or situation.",
+    pos:"Sentence-initial (most common) OR mid-sentence (between two commas)",
+    pos_detail:"Start: 'On the other hand, CDMs offer richer profiles.' | Mid: 'IRT, on the other hand, focuses on item-level precision.'",
+    note:"Specifically signals TWO different perspectives being weighed. Often paired with 'On one hand…'.",
+    key_diff:"'On one hand, X. On the other hand, Y.' — use this structure when genuinely comparing two sides of an argument.",
+    contexts:[
+      {ctx:"Strict environmental regulations can reduce industrial pollution.", sent:"On the other hand, they may impose significant costs on businesses and consumers."},
+      {ctx:"Remote work increases employee flexibility and reduces commute time.", sent:"On the other hand, it can erode team cohesion and informal knowledge sharing."},
+    ],
+    acad:["Qualitative methods provide rich contextual insight; on the other hand, they limit generalizability.", "On the other hand, critics argue that the model sacrifices explanatory depth for predictive accuracy."],
+    daily:["The job pays really well. On the other hand, the hours are brutal.", "Living in the city is convenient. On the other hand, it's extremely expensive."] },
+
+  { cat:"Contrast", word:"Although / Though", reg:"Both",
+    meaning:"Used to introduce a fact that makes the main statement surprising or unexpected.",
+    pos:"Sentence-initial OR after main clause OR sentence-final ('though' only, informal)",
+    pos_detail:"Start: 'Although it rained, we went out.' | After main clause: 'We went out, although it rained.' | Sentence-final ('though' only): 'I liked the movie, though.' — 'although' CANNOT end a sentence; only 'though' can.",
+    note:"'Although' is more formal. 'Though' is more common in speech. 'Even though' is stronger — use it when the contrast is very surprising.",
+    key_diff:"Never write 'although … but': ✗ 'Although she tried, but she failed.' — pick one: 'Although she tried, she failed.' ✓",
+    contexts:[
+      {ctx:"", sent:"Although the sample size was large, the effect was not statistically significant."},
+      {ctx:"", sent:"Although income inequality has grown, social mobility has remained relatively stable."},
+      {ctx:"The results were surprising in some ways.", sent:"The core hypothesis was supported, though the effect size was smaller than expected."},
+    ],
+    acad:["Although the intervention was brief, it produced lasting changes in health behavior.", "The correlation was positive, though it did not reach the conventional threshold for significance."],
+    daily:["Although I was tired, I stayed up to finish the report.", "I liked the conference, though some of the sessions ran too long."] },
+
+  { cat:"Contrast", word:"While", reg:"Both",
+    meaning:"Used to contrast two facts that differ — or to show two things happening at the same time.",
+    pos:"Sentence-initial (contrast clause first) OR mid-sentence",
+    pos_detail:"'While Study A found benefits, Study B found none.' | 'He favors quantitative methods, while his co-author prefers qualitative approaches.'",
+    note:"'While' can mean 'at the same time as' (time) OR 'whereas / although' (contrast). Context usually makes the meaning clear.",
+    key_diff:"Time: 'While I was analyzing data, she wrote the introduction.' | Contrast: 'While men showed higher risk tolerance, women showed more consistent returns.' — different subjects signal contrast.",
+    contexts:[
+      {ctx:"", sent:"While developed countries have reduced emissions, developing nations have seen rapid increases."},
+      {ctx:"", sent:"While cognitive behavioral therapy targets thought patterns, medication addresses neurochemical imbalances."},
+    ],
+    acad:["While the quantitative results were robust, the qualitative accounts revealed important nuance.", "While short-term outcomes improved, the long-term effects remained unclear at the time of publication."],
+    daily:["While I prefer working in the morning, my colleague is a night owl.", "He studied economics, while his sister chose to study law."] },
+
+  { cat:"Contrast", word:"Yet", reg:"Both",
+    meaning:"Used to introduce a surprising or unexpected contrast — similar to 'but', but stronger.",
+    pos:"Sentence-initial (no comma needed) OR mid-sentence as a coordinating conjunction",
+    pos_detail:"'He tried hard, yet he failed.' — comma before 'yet' when connecting two complete clauses.",
+    note:"'Yet' is more literary and emphatic than 'but'. It often conveys irony or tension between two facts.",
+    key_diff:"'But' is neutral. 'Yet' adds weight: 'The effect was small, yet it has profound practical implications.'",
+    contexts:[
+      {ctx:"The government invested heavily in public health infrastructure.", sent:"Yet life expectancy in the lowest income quartile barely improved."},
+      {ctx:"Decades of research have documented the benefits of sleep.", sent:"Yet sleep deprivation remains normalized in many professional cultures."},
+    ],
+    acad:["The correlation was modest, yet it was remarkably consistent across 18 countries.", "Decades of anti-poverty programs have been implemented; yet wealth inequality continues to widen."],
+    daily:["She studied for weeks, yet she still felt unprepared.", "It was a small gesture, yet it meant everything to her."] },
+
+  { cat:"Contrast", word:"In contrast", reg:"Both",
+    meaning:"Used to show a sharp or clear difference between two things.",
+    pos:"Sentence-initial (most common) OR mid-sentence via 'in contrast to + noun'",
+    pos_detail:"Start: 'In contrast, the control group…' | With noun: 'In contrast to high-income households, low-income families…'",
+    note:"'In contrast' signals a strong, clear difference — more forceful than 'however'. Use it when the comparison is the main point.",
+    key_diff:"'In contrast to' is a preposition — must be followed by a noun phrase: ✓ 'In contrast to last year…' ✗ 'In contrast to results improved…'",
+    contexts:[
+      {ctx:"Nordic countries consistently rank high on social trust indices.", sent:"In contrast, Southern and Eastern European countries show markedly lower trust levels."},
+      {ctx:"Men in the study reported higher job satisfaction.", sent:"Women, in contrast, placed greater emphasis on work-life balance than on salary."},
+    ],
+    acad:["In contrast to the experimental group, controls showed no significant change over the 12-week period.", "Urbanization rates in Sub-Saharan Africa are accelerating; in contrast, many East Asian cities have begun to shrink."],
+    daily:["In contrast to last winter, this year has been unusually mild.", "My brother loves spicy food. In contrast, I can barely handle any heat."] },
+
+  { cat:"Cause/Effect", word:"Therefore", reg:"Both",
+    meaning:"Used to introduce a logical conclusion that follows from the evidence or argument just presented.",
+    pos:"Sentence-initial (most common) OR mid-sentence (between two commas)",
+    pos_detail:"Start: 'Therefore, the null hypothesis…' | Mid: 'The null hypothesis, therefore, was rejected.'",
+    note:"The most widely used word for showing a logical conclusion. Works in both formal and informal writing.",
+    key_diff:"'Therefore' introduces a conclusion based on logic or evidence — it is not used for purely emotional reasons.",
+    contexts:[
+      {ctx:"The confidence interval did not include zero.", sent:"Therefore, the null hypothesis of no effect was rejected."},
+      {ctx:"Unemployment is strongly associated with poor mental health outcomes.", sent:"Therefore, labor market policies should be central to any mental health strategy."},
+      {ctx:"The variance explained by the model exceeded 80%.", sent:"The model was, therefore, deemed suitable for prediction purposes."},
+    ],
+    acad:["The Shapiro-Wilk test indicated non-normality; therefore, non-parametric tests were used.", "Access to clean water is unevenly distributed; therefore, public health interventions must be geographically targeted."],
+    daily:["It was raining heavily. Therefore, we cancelled the outdoor event.", "She trained every day. Therefore, it was no surprise when she won."] },
+
+  { cat:"Cause/Effect", word:"Thus", reg:"Academic",
+    meaning:"Used to show a direct result or logical conclusion — more concise than 'therefore'.",
+    pos:"Sentence-initial (with comma) OR mid-sentence (no comma needed after verb)",
+    pos_detail:"'Thus, the model…' OR 'Incomes rose sharply, thus reducing the poverty rate.'",
+    note:"'Thus' is slightly more formal and concise than 'therefore'. In academic writing, it often appears mid-sentence without a comma.",
+    key_diff:"'Therefore' is more common in general writing. 'Thus' is typical in scientific papers, especially in methods and results sections.",
+    contexts:[
+      {ctx:"The two groups were equivalent on all baseline measures.", sent:"Thus, observed differences at post-test can be attributed to the intervention."},
+      {ctx:"GDP growth was driven primarily by consumption rather than investment.", sent:"The recovery was, thus, more fragile than headline figures suggested."},
+    ],
+    acad:["Brain activation in the amygdala increased during threat processing, thus confirming the role of this region in fear responses.", "The model converged after 200 iterations, thus confirming numerical stability."],
+    daily:["He arrived an hour late, thus missing the entire first session.", "She missed the final exam and thus failed to complete the course."] },
+
+  { cat:"Cause/Effect", word:"Hence", reg:"Academic",
+    meaning:"Used to show a direct logical consequence — similar to 'therefore' but more formal.",
+    pos:"Sentence-initial (with comma) OR mid-sentence (with commas) OR before a noun phrase (no verb needed)",
+    pos_detail:"Start: 'Hence, caution is needed.' | Mid: 'Three items were, hence, removed.' | Before noun (no comma): 'Hence the term cognitive load.'",
+    note:"'Hence' is the most formal of the three (therefore / thus / hence). Very common in conclusions. Also used in the fixed phrase 'hence the name/term'.",
+    key_diff:"'Hence the term X' is a useful academic shorthand: 'The model allows multiple pathways — hence the term general diagnostic model.'",
+    contexts:[
+      {ctx:"Participants were not randomly assigned to conditions.", sent:"Hence, the results should be interpreted with caution."},
+      {ctx:"The construct was originally developed in a Western context.", sent:"Hence the need for cross-cultural validation before broader application."},
+    ],
+    acad:["Response rates fell below 40%; hence, potential non-response bias cannot be ruled out.", "The variable captures both frequency and intensity of exposure — hence the term composite risk score."],
+    daily:["She studied abroad for three years; hence, her fluency in French.", "The road was icy; hence the accident at the intersection."] },
+
+  { cat:"Cause/Effect", word:"Consequently", reg:"Academic",
+    meaning:"Used to introduce a direct and often significant result that follows from a cause.",
+    pos:"Sentence-initial (with comma) OR mid-sentence (between commas)",
+    pos_detail:"'Consequently, the policy was revised.' | 'Three agencies were, consequently, merged.'",
+    note:"'Consequently' carries more weight than 'therefore' — it suggests the result was inevitable or had real impact.",
+    key_diff:"'Therefore' is neutral. 'Consequently' implies the result had noticeable consequences: 'Funding was cut. Consequently, 200 positions were eliminated.'",
+    contexts:[
+      {ctx:"The primary data source was found to contain systematic errors.", sent:"Consequently, the entire dataset had to be reprocessed before analysis."},
+      {ctx:"Trust in government institutions declined sharply after the scandal.", sent:"Voter turnout, consequently, fell to a historic low at the next election."},
+    ],
+    acad:["Income inequality widened significantly during this period; consequently, social mobility declined across most demographic groups.", "The drug failed Phase II trials; consequently, the research program was discontinued."],
+    daily:["He skipped breakfast every day. Consequently, he was exhausted by noon.", "The project was severely underfunded. Consequently, several key milestones were missed."] },
+
+  { cat:"Cause/Effect", word:"As a result", reg:"Both",
+    meaning:"Used to introduce what happened because of something — a clear cause-and-effect relationship.",
+    pos:"Sentence-initial (most common) OR mid-sentence via 'as a result of + noun'",
+    pos_detail:"Start: 'As a result, the deadline was extended.' | With noun phrase: 'Life expectancy fell as a result of the famine.'",
+    note:"More conversational than 'consequently' or 'therefore'. Works naturally in both everyday writing and formal reports.",
+    key_diff:"'As a result of + noun' links the cause directly: 'As a result of the recession, unemployment doubled.' — 'of' must be followed by a noun, not a full clause.",
+    contexts:[
+      {ctx:"The intervention significantly increased physical activity in participants.", sent:"As a result, average BMI declined by 1.2 points over six months."},
+      {ctx:"Trade barriers were reduced under the new bilateral agreement.", sent:"Exports grew rapidly as a result of the increased market access."},
+    ],
+    acad:["Access to antiretroviral therapy expanded rapidly; as a result, HIV-related mortality fell by over 60% in the region.", "As a result of the methodological limitations, the authors recommend replication with a larger probability sample."],
+    daily:["I stayed up until 2 a.m. As a result, I overslept and missed my meeting.", "The team communicated clearly throughout the project. As a result, it was delivered ahead of schedule."] },
+
+  { cat:"Cause/Effect", word:"Because / Since / As", reg:"Both",
+    meaning:"Used to give the reason or cause for something.",
+    pos:"Sentence-initial (reason clause first) OR mid-sentence (reason clause after main clause)",
+    pos_detail:"'Because it rained, we stayed in.' | 'We stayed in because it rained.' | 'Since the data were normal, t-tests were used.'",
+    note:"'Because' directly answers WHY and is the strongest. 'Since' and 'as' introduce a reason that is already known or less emphasized.",
+    key_diff:"'Because' = new or important reason. 'Since/As' = background or known reason: 'Since randomization was not feasible, propensity matching was used.'",
+    contexts:[
+      {ctx:"", sent:"Because the distribution was heavily skewed, a log transformation was applied."},
+      {ctx:"", sent:"Since both groups were equivalent at baseline, post-test differences can be attributed to the treatment."},
+    ],
+    acad:["Because the outcome variable was binary, logistic regression was used rather than OLS.", "As the literature offers no consensus on the directionality, the analysis remains exploratory."],
+    daily:["I'm staying home today because I have a terrible headache.", "Since you're already here, why don't you stay for dinner?"] },
+
+  { cat:"Cause/Effect", word:"Due to", reg:"Both",
+    meaning:"Used to give the cause or reason for something — specifically before a noun or noun phrase.",
+    pos:"Sentence-initial OR mid-sentence — but ALWAYS followed by a noun phrase, never a full clause",
+    pos_detail:"✓ 'Due to data loss, …' | ✗ 'Due to the server crashed, …' (wrong — use 'because' instead)",
+    note:"'Due to' is a preposition, not a conjunction. It cannot introduce a full sentence — only a noun or noun phrase.",
+    key_diff:"'Due to' = noun follows. 'Because' = full sentence follows. Can you replace 'due to' with 'because of'? If yes, it's correct usage.",
+    contexts:[
+      {ctx:"The study could not be completed as originally planned.", sent:"Due to high attrition, the final sample was substantially smaller than anticipated."},
+      {ctx:"Several participants withdrew before the end of the study.", sent:"Their withdrawal was due to scheduling conflicts rather than adverse effects."},
+    ],
+    acad:["Due to missing data on key covariates, 87 cases were excluded from the primary analysis.", "The observed discrepancy is likely due to response bias in the self-report instrument."],
+    daily:["The flight was delayed due to severe weather conditions.", "Due to heavy traffic, I arrived almost 30 minutes late."] },
+
+  { cat:"Sequence", word:"First / Firstly", reg:"Both",
+    meaning:"Used to introduce the first item in a list of steps, reasons, or points.",
+    pos:"Sentence-initial (followed by a comma)",
+    pos_detail:"'First, the data were collected. Second, they were coded. Finally, …'",
+    note:"Always use in a series: 'first … second … finally'. 'Firstly' sounds slightly more formal than 'first'. Be consistent — don't mix styles.",
+    key_diff:"Don't mix: ✗ 'Firstly … second … lastly' — be consistent: use either 'first/second/third' or 'firstly/secondly/thirdly' throughout.",
+    contexts:[
+      {ctx:"There are three main reasons to be cautious about this finding.", sent:"First, the sample was not randomly selected from the population."},
+      {ctx:"The analysis proceeds in two stages.", sent:"First, descriptive statistics are reported for all variables."},
+    ],
+    acad:["First, the construct validity of the scale is established; second, its predictive validity is assessed.", "Firstly, the study design will be described; secondly, the sampling procedure will be explained."],
+    daily:["First, preheat the oven to 200°C. Then, prepare the filling.", "First, let's agree on the goal; then we can talk about how to get there."] },
+
+  { cat:"Sequence", word:"Subsequently", reg:"Academic",
+    meaning:"Used to describe something that happened or came after something else.",
+    pos:"Sentence-initial (with comma) OR mid-sentence",
+    pos_detail:"'Participants completed a pre-test; subsequently, they received the treatment.'",
+    note:"More formal than 'then' or 'after that'. Emphasizes that the second event directly followed the first.",
+    key_diff:"'Then' is casual. 'Subsequently' is formal: 'Data were collected; subsequently, they were cleaned and coded.'",
+    contexts:[
+      {ctx:"Blood samples were taken before the intervention began.", sent:"Subsequently, participants received either the drug or a placebo for 12 weeks."},
+      {ctx:"The initial proposal was rejected by the ethics committee.", sent:"The researchers subsequently revised the protocol and resubmitted for approval."},
+    ],
+    acad:["Participants completed a baseline questionnaire; subsequently, they were randomly assigned to experimental conditions.", "The legislation was passed in 2018; subsequently, enforcement mechanisms were gradually introduced."],
+    daily:["She got the promotion and subsequently moved to the company's head office.", "The announcement was made on Friday; subsequently, shares rose 8% by Monday morning."] },
+
+  { cat:"Sequence", word:"Then / Next", reg:"Daily",
+    meaning:"Used to describe what comes after in a sequence of events or steps.",
+    pos:"Sentence-initial (most common) OR mid-sentence",
+    pos_detail:"'We had dinner, then went for a walk.' | 'Next, add the eggs to the mixture.'",
+    note:"'Then' is very natural in both speech and writing. 'Next' is slightly more structured, often used in instructions or formal procedures.",
+    key_diff:"'Next' implies a clear next step in a list. 'Then' implies a natural sequence in time.",
+    contexts:[
+      {ctx:"The raw data were downloaded from the government database.", sent:"They were then merged with census records at the district level."},
+      {ctx:"Interviews were transcribed verbatim.", sent:"Next, the transcripts were coded using a thematic analysis framework."},
+    ],
+    acad:["The data were cleaned and screened for outliers; they were then subjected to confirmatory factor analysis.", "Next, hierarchical regression models were estimated to test the mediating role of self-efficacy."],
+    daily:["We had dinner, then went for a walk along the river.", "Finish the introduction first, then move on to the methods section."] },
+
+  { cat:"Sequence", word:"Finally / Lastly", reg:"Both",
+    meaning:"Used to introduce the last item in a list or the last step in a sequence.",
+    pos:"Sentence-initial (most common) OR mid/sentence-final ('finally' only, time meaning)",
+    pos_detail:"Sequence marker (both): 'Finally, the conclusions are presented.' | 'Lastly, I'd like to thank…' | 'Finally' also means 'at last': 'She finally arrived.' — 'Lastly' only ever closes a list.",
+    note:"'Finally' can also mean 'after a long wait'. 'Lastly' is exclusively used to close a list — it avoids this ambiguity.",
+    key_diff:"In academic writing, 'lastly' is safer because 'finally' might be misread as expressing relief or impatience.",
+    contexts:[
+      {ctx:"Three predictors were entered in the regression model.", sent:"Finally, interaction terms were added to test for moderation effects."},
+      {ctx:"We have discussed the theoretical and methodological contributions of this study.", sent:"Lastly, the practical implications for policy are considered."},
+    ],
+    acad:["Finally, the limitations of the study are acknowledged and directions for future research are proposed.", "Lastly, it should be noted that these findings apply specifically to the adult working population."],
+    daily:["Finally, add the cheese on top and bake for 10 minutes.", "Lastly, I want to thank everyone who volunteered their time for this project."] },
+
+  { cat:"Sequence", word:"Meanwhile", reg:"Both",
+    meaning:"Used to describe two things happening at the same time.",
+    pos:"Sentence-initial (followed by a comma)",
+    pos_detail:"'I'll set the table. Meanwhile, can you boil the pasta?'",
+    note:"'Meanwhile' emphasizes that two separate events are happening simultaneously. It creates a sense of parallel action.",
+    key_diff:"'While' shows simultaneity within one sentence. 'Meanwhile' connects two separate sentences.",
+    contexts:[
+      {ctx:"The intervention group received weekly therapy sessions.", sent:"Meanwhile, the control group continued with treatment as usual."},
+      {ctx:"The research team was finalizing the analysis.", sent:"Meanwhile, the policy landscape shifted dramatically with the change in government."},
+    ],
+    acad:["The primary analysis focused on behavioral outcomes; meanwhile, a separate team examined the neurological data.", "Inflation fell steadily throughout the third quarter; meanwhile, unemployment rose to a five-year high."],
+    daily:["I'll prepare the salad. Meanwhile, could you start the grill?", "She was revising her thesis. Meanwhile, her supervisor was reviewing the earlier chapters."] },
+
+  { cat:"Example", word:"For example", reg:"Both",
+    meaning:"Used to introduce a specific example that illustrates or supports a general point.",
+    pos:"Sentence-initial (most common) OR mid-sentence (between two commas)",
+    pos_detail:"Start: 'For example, some countries…' | Mid: 'Several countries, for example Denmark and Finland, have adopted…'",
+    note:"The most common example word — safe in any context. Can be abbreviated to 'e.g.' in academic writing (inside parentheses).",
+    key_diff:"'For example' vs 'For instance': They are interchangeable. 'For instance' sounds slightly more formal.",
+    contexts:[
+      {ctx:"Several cognitive biases can affect judgment under uncertainty.", sent:"For example, anchoring bias leads people to rely too heavily on the first piece of information they receive."},
+      {ctx:"Environmental factors play an important role in health outcomes.", sent:"For example, air pollution has been linked to increased rates of respiratory disease and cognitive decline."},
+    ],
+    acad:["Several structural factors contribute to poverty persistence; for example, inadequate access to credit markets limits investment in human capital.", "The scale has been validated in multiple contexts, for example in clinical samples and community populations."],
+    daily:["There are many ways to reduce stress. For example, regular exercise, mindfulness, and adequate sleep all help.", "I enjoy reading about many topics. For example, I recently finished a book on behavioral economics."] },
+
+  { cat:"Example", word:"For instance", reg:"Both",
+    meaning:"Used to give a specific example — same meaning as 'for example'.",
+    pos:"Sentence-initial (with comma) OR mid-sentence (between two commas)",
+    pos_detail:"'For instance, few studies have examined this population.'",
+    note:"Interchangeable with 'for example' in most contexts. Slightly more formal. Commonly used in academic writing.",
+    key_diff:"'For example' is more common in everyday writing. 'For instance' appears more in academic contexts. Both are always correct.",
+    contexts:[
+      {ctx:"Framing effects are pervasive in political communication.", sent:"For instance, describing a policy as 'saving 200 lives' vs. 'letting 800 die' produces very different responses."},
+      {ctx:"Income inequality affects many dimensions of social life.", sent:"For instance, it is associated with higher rates of crime, poorer health, and lower social mobility."},
+    ],
+    acad:["Several methodological weaknesses limit the conclusions; for instance, the control group received no intervention at all, making it impossible to rule out attention effects.", "Cross-lagged panel models, for instance, can help establish temporal precedence in observational data."],
+    daily:["Some people perform better under pressure. For instance, my colleague always delivers her best work right before a deadline.", "I find many historical periods fascinating. For instance, I've been reading a lot about the Cold War recently."] },
+
+  { cat:"Example", word:"Such as", reg:"Both",
+    meaning:"Used to introduce examples — specifically a list of nouns or noun phrases.",
+    pos:"Mid-sentence ONLY — directly after the noun it explains",
+    pos_detail:"'Diseases such as diabetes and hypertension…' | Do NOT use at the start of a sentence.",
+    note:"'Such as' is a preposition — it MUST be followed by nouns (things), not full sentences. Never write 'such as + full sentence'.",
+    key_diff:"✓ 'Factors such as age, income, and education…' ✗ 'Such as, age is important.' — never at sentence start, never before a full clause.",
+    contexts:[
+      {ctx:"", sent:"Behavioral interventions such as cognitive behavioral therapy and motivational interviewing have shown promise in reducing substance use."},
+      {ctx:"", sent:"Structural barriers such as lack of transportation and limited childcare access reduce labor force participation among low-income mothers."},
+    ],
+    acad:["Personality traits such as conscientiousness and neuroticism are among the strongest predictors of academic performance.", "Countries such as Denmark, the Netherlands, and New Zealand consistently rank highly on wellbeing indices."],
+    daily:["I enjoy outdoor activities such as hiking, cycling, and swimming.", "She's been developing new skills such as data visualization and Python programming."] },
+
+  { cat:"Example", word:"Namely", reg:"Academic",
+    meaning:"Used to specify or name something exactly — to tell the reader precisely what you mean.",
+    pos:"Mid-sentence — directly after the noun or concept being specified",
+    pos_detail:"'Three predictors were included, namely age, income, and education level.'",
+    note:"'Namely' introduces a complete and exact list — not just examples. Use it when you are listing ALL items, not just some.",
+    key_diff:"'For example' suggests a sample from a larger group. 'Namely' lists ALL: 'Two conditions were tested, namely the control and the treatment.' — exactly two, no more.",
+    contexts:[
+      {ctx:"", sent:"The study examined three dimensions of wellbeing, namely hedonic, eudaimonic, and social wellbeing."},
+      {ctx:"", sent:"Two competing hypotheses have been proposed, namely the cognitive load hypothesis and the dual-process hypothesis."},
+    ],
+    acad:["The analysis controls for two key confounders, namely prior attainment and socioeconomic background.", "The literature identifies one major limitation, namely the reliance on cross-sectional designs that preclude causal inference."],
+    daily:["I have one simple request, namely that everyone arrives on time.", "There's one person who can solve this, namely the department head."] },
+
+  { cat:"Example", word:"In particular", reg:"Both",
+    meaning:"Used to highlight one specific thing from a broader group as especially important or interesting.",
+    pos:"Sentence-initial (most common) OR mid-sentence (between two commas)",
+    pos_detail:"Start: 'In particular, women over 50 showed the strongest effect.' | Mid: 'The youngest cohort, in particular, showed dramatic increases in screen time.'",
+    note:"'In particular' says: 'among everything I mentioned, THIS one deserves special attention.' Use it to zoom in on the most notable detail.",
+    key_diff:"'For example' introduces any example. 'In particular' highlights the MOST notable one — the one you most want the reader to remember.",
+    contexts:[
+      {ctx:"Several subgroups showed stronger effects than the overall sample.", sent:"In particular, participants with no prior treatment history responded most strongly to the intervention."},
+      {ctx:"The findings have implications for several policy areas.", sent:"Education policy, in particular, will need to adapt to the changing labor market demands."},
+    ],
+    acad:["In particular, the finding that effect size was moderated by baseline severity warrants further investigation.", "The results, in particular the unexpected reversal in the older age group, deserve closer attention."],
+    daily:["I love many types of cuisine. In particular, I find Korean and Mexican food incredibly exciting.", "The conference was excellent. In particular, the keynote on behavioral nudges was outstanding."] },
+
+  { cat:"Emphasis", word:"Indeed", reg:"Both",
+    meaning:"Used to strongly confirm or agree with what was just said, or to intensify a statement.",
+    pos:"Sentence-initial (with comma) OR mid-sentence (between two commas)",
+    pos_detail:"'Indeed, this is the largest study to date.' | 'The effect was, indeed, surprisingly large.'",
+    note:"'Indeed' confirms that something is true — often used to agree with a previous point or add extra certainty.",
+    key_diff:"'In fact' corrects or surprises. 'Indeed' confirms and strengthens: 'Some predicted a positive result. Indeed, the results were strongly positive.'",
+    contexts:[
+      {ctx:"Previous studies hinted at a possible dose-response relationship.", sent:"Indeed, the current data confirm that higher doses produce proportionally larger effects."},
+      {ctx:"Critics have long argued that the policy would have unintended consequences.", sent:"Indeed, longitudinal data now show exactly the distributional effects that were predicted."},
+    ],
+    acad:["Indeed, the effect sizes reported here are among the largest observed in this literature.", "The model was, indeed, able to predict outcomes with greater accuracy than any prior benchmark."],
+    daily:["This is indeed the most challenging project I've ever worked on.", "She said it would be difficult. It was, indeed, far harder than any of us expected."] },
+
+  { cat:"Emphasis", word:"In fact", reg:"Both",
+    meaning:"Used to introduce information that is surprising, corrective, or stronger than what was expected.",
+    pos:"Sentence-initial (with comma) OR mid-sentence (between two commas)",
+    pos_detail:"'In fact, the opposite pattern was observed.' | 'The results were, in fact, quite surprising.'",
+    note:"'In fact' often corrects a common assumption or adds a surprising detail. It says: 'the reality is different from — or stronger than — what you expected.'",
+    key_diff:"'Indeed' confirms an expectation. 'In fact' often overturns one: 'I thought it would be straightforward. In fact, it was extraordinarily complex.'",
+    contexts:[
+      {ctx:"Many assumed the policy would reduce inequality.", sent:"In fact, it widened the gap between the highest and lowest income groups."},
+      {ctx:"The early results looked promising.", sent:"Closer inspection, in fact, revealed a serious confound that invalidated the main comparison."},
+    ],
+    acad:["In fact, the data suggest the opposite direction of causality from what the authors originally proposed.", "The confidence interval is remarkably narrow; in fact, it is the tightest reported in any study of this type."],
+    daily:["I thought the conference would be boring. In fact, it was one of the best I've attended.", "He doesn't just like statistics — in fact, he reads methods papers for fun."] },
+
+  { cat:"Emphasis", word:"Importantly", reg:"Academic",
+    meaning:"Used to signal that the next piece of information is particularly significant or key to the argument.",
+    pos:"Sentence-initial (most common) OR mid-sentence (between two commas)",
+    pos_detail:"Start: 'Importantly, this effect replicates.' | Mid: 'The effect was, importantly, consistent across all subgroups.'",
+    note:"Used to guide the reader's attention to the most critical finding or point. It says: 'pay attention to this — it matters more than the other details.'",
+    key_diff:"'Importantly' is an adverb: ✗ 'Important, the results showed…' ✓ 'Importantly, the results showed…'",
+    contexts:[
+      {ctx:"The treatment worked well in the primary sample.", sent:"Importantly, the effects replicated in two independent validation samples."},
+      {ctx:"The new methodology has several advantages.", sent:"The estimates were, importantly, robust to a range of alternative model specifications."},
+    ],
+    acad:["Importantly, the findings hold after controlling for publication bias using the trim-and-fill method.", "The causal mechanism is, importantly, consistent with both the social learning and rational choice frameworks."],
+    daily:["Importantly, the side effects were mild and short-lived in all participants.", "Importantly, this policy applies to all employees, not just those hired after 2020."] },
+
+  { cat:"Emphasis", word:"Notably", reg:"Academic",
+    meaning:"Used to draw attention to something that is especially worth noticing.",
+    pos:"Sentence-initial (most common) OR mid-sentence (between two commas)",
+    pos_detail:"Start: 'Notably, no prior study has examined…' | Mid: 'One subgroup, notably, showed the reverse pattern.'",
+    note:"'Notably' is more objective than 'importantly'. It says: 'this fact is interesting / unexpected / worth highlighting'.",
+    key_diff:"'Importantly' = this fact is central to the argument. 'Notably' = this fact is interesting or unexpected, even if secondary.",
+    contexts:[
+      {ctx:"The results were largely consistent with prior research.", sent:"Notably, the effect was strongest among the youngest age cohort."},
+      {ctx:"Most variables showed the expected pattern.", sent:"One predictor, notably, failed to reach significance in any of the specifications."},
+    ],
+    acad:["Notably, the gender gap in earnings was largest in occupations with the least standardized compensation practices.", "No previous study has examined this interaction; notably, the current design is also the first to use a nationally representative sample."],
+    daily:["Notably, she completed the entire program without missing a single session.", "The results were mostly predictable — notably, one country's response completely defied all models."] },
+
+  { cat:"Emphasis", word:"Above all", reg:"Both",
+    meaning:"Used to highlight the single most important point — usually the final and most essential one.",
+    pos:"Sentence-initial (most common) OR mid-sentence (between two commas)",
+    pos_detail:"Start: 'Above all, transparency is essential.' | Mid (in a list): 'The study prioritized rigor, efficiency, and, above all, ethical conduct.'",
+    note:"Best used after listing several points to signal: 'of everything I mentioned, this one matters most'. Provides a strong final emphasis.",
+    key_diff:"'Most importantly' and 'above all' are similar. 'Above all' has a slightly stronger, more definitive tone — like a final verdict.",
+    contexts:[
+      {ctx:"Researchers must consider several ethical obligations.", sent:"Above all, they must ensure that participation is genuinely voluntary and informed."},
+      {ctx:"Effective leadership requires many qualities.", sent:"It requires intelligence, empathy, and, above all, the ability to inspire trust."},
+    ],
+    acad:["The intervention was low-cost, scalable, and, above all, acceptable to the target population.", "Above all, future research must address the near-total absence of longitudinal evidence in this field."],
+    daily:["You can be flexible on the timeline and the budget. Above all, don't compromise on quality.", "Above all, be honest with yourself about what you actually want."] },
+
+  { cat:"Conclusion", word:"In conclusion", reg:"Both",
+    meaning:"Used to signal the beginning of the final summary or closing statement.",
+    pos:"Sentence-initial (followed by a comma)",
+    pos_detail:"Almost exclusively sentence-initial, opening the final paragraph: 'In conclusion, this study provides…' — not used mid-sentence in academic writing.",
+    note:"A clear signal to the reader that the argument is ending. Use it to open the final paragraph in an essay or conclusion section of a paper.",
+    key_diff:"'In conclusion' ends a piece of writing. 'In summary' wraps up a section. Save 'In conclusion' for the very end.",
+    contexts:[
+      {ctx:"", sent:"In conclusion, this study provides robust evidence that mindfulness-based interventions can reduce perceived stress in working adults."},
+      {ctx:"", sent:"In conclusion, while the findings are promising, larger randomized trials are needed before the intervention can be recommended at scale."},
+    ],
+    acad:["In conclusion, the evidence reviewed here consistently supports a positive association between social cohesion and population health.", "In conclusion, these findings challenge the dominant theoretical framework and point toward the need for a more integrative model."],
+    daily:["In conclusion, I think we should go with the second proposal — it's more realistic and better costed.", "In conclusion, the trip was exhausting but absolutely worth every minute."] },
+
+  { cat:"Conclusion", word:"In summary", reg:"Both",
+    meaning:"Used to briefly restate the main points that were just covered.",
+    pos:"Sentence-initial (most common) OR mid-sentence (between commas, less common)",
+    pos_detail:"Start: 'In summary, three themes emerged.' | Mid (rare but valid): 'The findings, in summary, support the model.'",
+    note:"More neutral and flexible than 'in conclusion'. Can be used at the end of any section — not just the very end of a paper.",
+    key_diff:"'In summary' restates what was said. 'In conclusion' draws a final judgment. 'In summary' can appear mid-paper; 'in conclusion' is reserved for the end.",
+    contexts:[
+      {ctx:"", sent:"In summary, three factors consistently predict political participation: education, civic engagement, and trust in institutions."},
+      {ctx:"", sent:"In summary, the experimental results support the first hypothesis but not the second."},
+    ],
+    acad:["In summary, the meta-analytic evidence points to a small but reliable effect of mindset interventions on academic achievement.", "The cross-national patterns, in summary, suggest that institutional context moderates the relationship between inequality and health."],
+    daily:["In summary, we need more time, a bigger budget, and better communication between teams.", "In summary, the semester was challenging but rewarding."] },
+
+  { cat:"Conclusion", word:"Overall", reg:"Both",
+    meaning:"Used to give a general evaluation or judgment that covers everything discussed.",
+    pos:"Sentence-initial (with comma) OR mid-sentence (between commas) OR sentence-final (no comma)",
+    pos_detail:"Start: 'Overall, the findings support the model.' | Mid: 'The results, overall, support the hypothesis.' | Sentence-final: 'The model performed well overall.' (no comma at end)",
+    note:"'Overall' is the lightest and most flexible conclusion word. Works in speech, casual writing, and formal academic writing.",
+    key_diff:"'Overall' can go at the END of a sentence — unlike most other linking words: 'The conference was well organized overall.' This is perfectly natural.",
+    contexts:[
+      {ctx:"There were some methodological limitations and a few unexpected findings.", sent:"Overall, however, the evidence strongly supports the effectiveness of the intervention."},
+      {ctx:"Some indicators improved while others showed mixed results.", sent:"The policy was, overall, judged to have had a modest positive effect on wellbeing."},
+    ],
+    acad:["Overall, the findings are consistent with a social-ecological model of behavior change.", "The model performed well overall, though predictive accuracy was lower for the youngest age group."],
+    daily:["Overall, the restaurant was excellent and I would definitely recommend it.", "It was a tough year, but overall, I learned a lot and I'm glad I did it."] },
+
+  { cat:"Conclusion", word:"To sum up", reg:"Both",
+    meaning:"Used to introduce a brief final summary — slightly more conversational than 'in conclusion'.",
+    pos:"Sentence-initial (most common)",
+    pos_detail:"Almost exclusively sentence-initial: 'To sum up, the evidence points to X.' Occasionally used mid-presentation in speech to recap a section.",
+    note:"Very natural in presentations and speeches. Also works in written essays. Signals a short, confident wrap-up.",
+    key_diff:"'To sum up' is more conversational than 'in conclusion'. Use 'to sum up' for a direct, confident close; 'in conclusion' for formal academic writing.",
+    contexts:[
+      {ctx:"", sent:"To sum up, the available evidence suggests that early childhood interventions yield the highest returns for long-term wellbeing."},
+      {ctx:"", sent:"To sum up, three key factors drive this pattern: structural inequality, limited institutional capacity, and weak civic engagement."},
+    ],
+    acad:["To sum up, the present study contributes to the literature by providing the first longitudinal test of this hypothesis in a non-Western context.", "To sum up, the findings have clear implications for how policymakers should prioritize investments in preventive healthcare."],
+    daily:["To sum up, you need to spend less, save more, and start investing earlier than you think.", "To sum up, it was a great semester — I learned more than I expected and met some remarkable people."] },
+
+  { cat:"Conclusion", word:"Taken together", reg:"Academic",
+    meaning:"Used to combine multiple findings or pieces of evidence into a single overall conclusion.",
+    pos:"Sentence-initial (followed by a comma)",
+    pos_detail:"Almost exclusively sentence-initial, used to synthesize several prior results: 'Taken together, these findings suggest…'",
+    note:"Almost exclusively used in academic writing. It signals: 'I have presented several findings — here is what they all mean when viewed as a whole.'",
+    key_diff:"'Taken together' is unique to academic writing. Use 'overall' or 'to sum up' in everyday language instead.",
+    contexts:[
+      {ctx:"Study 1 found positive effects on wellbeing. Study 2 replicated the results in a different population. Study 3 identified the likely mechanism.", sent:"Taken together, these findings provide strong and converging evidence for the effectiveness of the intervention."},
+      {ctx:"The qualitative themes pointed to a lack of trust. The quantitative results showed low uptake. The implementation data revealed key barriers.", sent:"Taken together, these strands of evidence paint a coherent picture of why the program underperformed."},
+    ],
+    acad:["Taken together, the experimental and observational evidence supports a causal interpretation of the association between air pollution and cognitive decline.", "Taken together, these analyses suggest that the effect is robust to a wide range of modeling assumptions."],
+    daily:["(This phrase is mainly used in academic writing — not common in everyday speech.)","(Use 'overall' or 'all in all' in daily conversation instead.)"] },
+];
+
+const CATS = ["all","Addition","Contrast","Cause/Effect","Sequence","Example","Emphasis","Conclusion"];
+const CAT_COLORS = { Addition:"#6355C4", Contrast:"#C05A2A", "Cause/Effect":"#2A7A50", Sequence:"#1A5EA0", Example:"#9A6010", Emphasis:"#A02868", Conclusion:"#3A7A28" };
+const REG_COLORS = { Academic:["#F0EEFF","#6355C4"], Both:["#EAF2FB","#1A5EA0"], Daily:["#EAF5EE","#2A6E42"] };
+
+let totalPracticed = 0, totalCorrect = 0;
+let flashCat="all", quizCat="all", browseCat="all";
+let flashList=[], flashIdx=0, flashFlipped=false;
+let quizMode="fillblank", quizList=[], quizIdx=0, quizCorrect=0, quizAnswered=false;
+
+function updateStats() {
+  document.getElementById("stat-practiced").textContent = totalPracticed;
+  document.getElementById("stat-correct").textContent = totalCorrect;
+  document.getElementById("stat-rate").textContent = totalPracticed ? Math.round(totalCorrect/totalPracticed*100)+"%" : "—";
+}
+
+function getFiltered(cat) { return cat==="all" ? WORDS : WORDS.filter(w=>w.cat===cat); }
+function shuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
+
+function makeFilters(id, active, cb) {
+  const el = document.getElementById(id);
+  el.innerHTML = CATS.map(c=>`<button class="filter-chip${c===active?" active":""}" data-cat="${c}">${c==="all"?"All":c}</button>`).join("");
+  el.querySelectorAll(".filter-chip").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      el.querySelectorAll(".filter-chip").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active"); cb(btn.dataset.cat);
+    });
+  });
+}
+
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("panel-"+btn.dataset.tab).classList.add("active");
+  });
+});
+
+// ═══ FLASHCARD ═══
+function initFlash() {
+  makeFilters("flash-filters","all",(cat)=>{flashCat=cat;startFlash();});
+  startFlash();
+}
+function startFlash() {
+  flashList=shuffle(getFiltered(flashCat)); flashIdx=0; flashFlipped=false; renderFlash();
+}
+function renderFlash() {
+  const w=flashList[flashIdx];
+  document.getElementById("card-scene").classList.remove("flipped");
+  flashFlipped=false;
+  const cc=CAT_COLORS[w.cat]||"#888";
+  const [rbg,rfg]=REG_COLORS[w.reg]||["#eee","#333"];
+  document.getElementById("card-front").innerHTML=`
+    <span class="card-cat-badge" style="background:${cc}">${w.cat}</span>
+    <div class="card-word">${w.word}</div>
+    <div class="card-reg-badge" style="background:${rbg};color:${rfg}">${w.reg}</div>
+    <div class="card-meaning">${w.meaning.split('.')[0]}.</div>
+    <div class="card-tap-hint">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Click to see full details
+    </div>`;
+  document.getElementById("card-back").innerHTML=`
+    <div class="back-section">
+      <div class="section-label">Full meaning</div>
+      <div class="note-text">${w.meaning}</div>
+    </div>
+    <div class="back-section">
+      <div class="section-label">Where in a sentence</div>
+      <span class="pos-badge">${w.pos}</span>
+      <div class="note-text" style="margin-top:8px;font-size:12.5px">${w.pos_detail}</div>
+    </div>
+    <div class="back-section">
+      <div class="section-label">How to use it correctly</div>
+      <div class="note-text">${w.note}</div>
+      ${w.key_diff?`<div class="key-diff"><strong>Key distinction:</strong> ${w.key_diff}</div>`:""}
+    </div>
+    <div class="back-section">
+      <div class="section-label">Academic examples</div>
+      <div class="eg-list">${w.acad.map(e=>`<div class="eg-item academic"><div class="eg-type a">Academic</div>${e}</div>`).join("")}</div>
+    </div>
+    <div class="back-section">
+      <div class="section-label">Everyday examples</div>
+      <div class="eg-list">${w.daily.map(e=>`<div class="eg-item daily"><div class="eg-type d">Everyday</div>${e}</div>`).join("")}</div>
+    </div>`;
+  const pct=((flashIdx+1)/flashList.length*100);
+  document.getElementById("fc-bar").style.width=pct+"%";
+  document.getElementById("fc-counter").textContent=`${flashIdx+1} / ${flashList.length}`;
+  document.getElementById("fc-prev").disabled=flashIdx===0;
+  document.getElementById("fc-next").disabled=flashIdx===flashList.length-1;
+}
+document.getElementById("card-scene").addEventListener("click",()=>{
+  flashFlipped=!flashFlipped;
+  document.getElementById("card-scene").classList.toggle("flipped",flashFlipped);
+});
+document.getElementById("fc-prev").addEventListener("click",e=>{e.stopPropagation();if(flashIdx>0){flashIdx--;renderFlash();}});
+document.getElementById("fc-next").addEventListener("click",e=>{e.stopPropagation();if(flashIdx<flashList.length-1){flashIdx++;renderFlash();}});
+document.addEventListener("keydown",e=>{
+  if(!document.getElementById("panel-flash").classList.contains("active"))return;
+  if(e.key==="ArrowLeft"&&flashIdx>0){flashIdx--;renderFlash();}
+  if(e.key==="ArrowRight"&&flashIdx<flashList.length-1){flashIdx++;renderFlash();}
+  if(e.key===" "||e.key==="Enter"){flashFlipped=!flashFlipped;document.getElementById("card-scene").classList.toggle("flipped",flashFlipped);e.preventDefault();}
+});
+
+// ═══ QUIZ ═══
+const QMODE_NAMES = { fillblank:"Fill in the blank", meaning:"Word → Meaning", meaning2word:"Meaning → Word", category:"Find the category", position:"Sentence position" };
+function initQuiz() {
+  makeFilters("quiz-filters","all",(cat)=>{quizCat=cat;startQuiz();});
+  document.querySelectorAll(".qmode-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      document.querySelectorAll(".qmode-btn").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active"); quizMode=btn.dataset.qmode; startQuiz();
+    });
+  });
+  document.getElementById("retry-btn").addEventListener("click",startQuiz);
+  startQuiz();
+}
+function startQuiz() {
+  document.getElementById("result-screen").classList.remove("show");
+  quizList=shuffle(getFiltered(quizCat)).slice(0,15);
+  quizIdx=0; quizCorrect=0; quizAnswered=false;
+  document.getElementById("qmode-label").textContent=QMODE_NAMES[quizMode];
+  document.getElementById("quiz-bar").style.width="0%";
+  document.getElementById("quiz-score-disp").textContent="0 / 0";
+  renderQ();
+}
+function renderQ() {
+  if(quizIdx>=quizList.length){showResult();return;}
+  quizAnswered=false;
+  const w=quizList[quizIdx];
+  document.getElementById("quiz-bar").style.width=(quizIdx/quizList.length*100)+"%";
+  document.getElementById("quiz-score-disp").textContent=`${quizCorrect} / ${quizIdx}`;
+  let html="";
+  if(quizMode==="fillblank") html=buildFillBlank(w);
+  else if(quizMode==="meaning") html=buildMeaning(w);
+  else if(quizMode==="meaning2word") html=buildMeaning2Word(w);
+  else if(quizMode==="category") html=buildCategory(w);
+  else if(quizMode==="position") html=buildPosition(w);
+  document.getElementById("quiz-area").innerHTML=html;
+  document.querySelectorAll(".opt-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>handleAnswer(btn,w));
+  });
+  const nb=document.querySelector(".next-btn");
+  if(nb) nb.addEventListener("click",()=>{quizIdx++;renderQ();});
+}
+
+function getDistractors(w,n,field) {
+  return shuffle(WORDS.filter(x=>x.word!==w.word)).slice(0,n).map(x=>x[field]);
+}
+
+const LETTERS=["A","B","C","D"];
+function optHtml(opts,correct,field) {
+  return opts.map((o,i)=>`<button class="opt-btn" data-correct="${o===correct}" data-answer="${o}"><span class="opt-letter">${LETTERS[i]}</span>${o}</button>`).join("");
+}
+
+function getCandidates(word) {
+  const parts = word.split(/\s*\/\s*/);
+  const candidates = [];
+  parts.forEach(p => {
+    const clean = p.replace(/\s*….*$/, '').trim();
+    if (clean) candidates.push(clean);
+  });
+  return candidates.length ? candidates : [word];
+}
+
+// Case-insensitive replace: finds first match regardless of case, replaces it
+function blankWord(sent, candidate) {
+  const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const rx = new RegExp(escaped, 'i');
+  if (!rx.test(sent)) return null;
+  return sent.replace(rx, '<span class="q-blank"></span>');
+}
+
+function buildFillBlank(w) {
+  const candidates = getCandidates(w.word);
+  let ctx = "", blanked = "";
+
+  if (w.contexts && w.contexts.length) {
+    const pair = w.contexts[Math.floor(Math.random() * w.contexts.length)];
+    ctx = pair.ctx || "";
+    let sent = pair.sent;
+    let result = null;
+    for (const c of candidates) {
+      result = blankWord(sent, c);
+      if (result) { blanked = result; break; }
+    }
+    if (!result) blanked = sent; // fallback (shouldn't happen)
+  } else {
+    const pool = [...w.acad, ...w.daily].filter(e => !e.includes("("));
+    let result = null, chosenSent = pool[0];
+    for (const sent of pool) {
+      for (const c of candidates) {
+        result = blankWord(sent, c);
+        if (result) { blanked = result; chosenSent = sent; break; }
+      }
+      if (result) break;
+    }
+    if (!result) blanked = chosenSent;
+  }
+
+  const opts = shuffle([w.word, ...getDistractors(w, 3, "word")]);
+  const fullSentence = ctx ? `${ctx} ${blanked}` : blanked;
+
+  return `<div class="quiz-card">
+    <div class="q-label">Choose the correct linking word to complete the passage</div>
+    <div class="q-sentence">${fullSentence}</div>
+    <div class="q-subhint">Category: <strong>${w.cat}</strong> &nbsp;·&nbsp; Register: ${w.reg}</div>
+    <div class="opts-grid">${optHtml(opts, w.word, "word")}</div>
+    <div class="feedback-panel" id="feedback"></div>
+  </div>
+  <div class="quiz-actions"><button class="next-btn" id="next-btn">Next question →</button></div>`;
+}
+function buildMeaning(w) {
+  const distractors=getDistractors(w,3,"meaning").map(m=>m.split('.')[0]+".");
+  const correct=w.meaning.split('.')[0]+".";
+  const opts=shuffle([correct,...distractors]);
+  return `<div class="quiz-card">
+    <div class="q-label">What does this word mean?</div>
+    <div class="q-sentence" style="font-size:42px;text-align:center;padding:20px 0;font-family:'Lora',serif;font-weight:600">${w.word}</div>
+    <div class="q-subhint">${w.cat} &nbsp;·&nbsp; ${w.reg}</div>
+    <div class="opts-grid">${optHtml(opts,correct,"meaning")}</div>
+    <div class="feedback-panel" id="feedback"></div>
+  </div>
+  <div class="quiz-actions"><button class="next-btn" id="next-btn">Next question →</button></div>`;
+}
+function buildMeaning2Word(w) {
+  const opts=shuffle([w.word,...getDistractors(w,3,"word")]);
+  // Redact the word itself from the displayed meaning, just in case
+  const candidates = getCandidates(w.word);
+  let safeMeaning = w.meaning;
+  candidates.forEach(c => {
+    safeMeaning = safeMeaning.replace(new RegExp('\\b' + c + '\\b', 'gi'), '______');
+  });
+  return `<div class="quiz-card">
+    <div class="q-label">Which word matches this meaning?</div>
+    <div class="q-context-box">${safeMeaning}</div>
+    <div class="q-subhint">Category: <strong>${w.cat}</strong></div>
+    <div class="opts-grid">${optHtml(opts,w.word,"word")}</div>
+    <div class="feedback-panel" id="feedback"></div>
+  </div>
+  <div class="quiz-actions"><button class="next-btn" id="next-btn">Next question →</button></div>`;
+}
+function buildCategory(w) {
+  const allCats=["Addition","Contrast","Cause/Effect","Sequence","Example","Emphasis","Conclusion"];
+  const distractors=shuffle(allCats.filter(c=>c!==w.cat)).slice(0,3);
+  const opts=shuffle([w.cat,...distractors]);
+  return `<div class="quiz-card">
+    <div class="q-label">Which category does this word belong to?</div>
+    <div class="q-sentence" style="font-size:40px;text-align:center;padding:20px 0;font-family:'Lora',serif;font-weight:600">${w.word}</div>
+    <div class="q-subhint" style="margin-bottom:4px">${w.meaning.split('.')[0]}.</div>
+    <div class="opts-grid">${opts.map((o,i)=>`<button class="opt-btn" data-correct="${o===w.cat}" data-answer="${o}" style="border-color:${CAT_COLORS[o]}33;color:${CAT_COLORS[o]}"><span class="opt-letter" style="background:${CAT_COLORS[o]}18;color:${CAT_COLORS[o]}">${LETTERS[i]}</span>${o}</button>`).join("")}</div>
+    <div class="feedback-panel" id="feedback"></div>
+  </div>
+  <div class="quiz-actions"><button class="next-btn" id="next-btn">Next question →</button></div>`;
+}
+function buildPosition(w) {
+  const correct = w.pos;
+  // Draw distractors from the actual pos values in the WORDS dataset,
+  // filtering out the correct answer and preferring values from different categories
+  // to make the options meaningfully distinct.
+  const allActualPos = [...new Set(WORDS.map(x => x.pos))].filter(p => p !== correct);
+  // Prefer distractors from different positional families for clearer contrast
+  const families = {
+    sentenceInitial: allActualPos.filter(p => p.startsWith("Sentence-initial") && !p.includes("OR")),
+    both: allActualPos.filter(p => p.includes(" OR ")),
+    midOnly: allActualPos.filter(p => p.startsWith("Mid-sentence")),
+    other: allActualPos.filter(p => !p.startsWith("Sentence") && !p.startsWith("Mid"))
+  };
+  // Pick one from each family if possible, then fill remaining randomly
+  let distractors = [];
+  const picked = new Set();
+  for (const group of [families.both, families.sentenceInitial, families.midOnly, families.other]) {
+    if (distractors.length >= 3) break;
+    const available = group.filter(p => !picked.has(p));
+    if (available.length) {
+      const pick = available[Math.floor(Math.random() * available.length)];
+      distractors.push(pick);
+      picked.add(pick);
+    }
+  }
+  // Fill up to 3 if needed
+  if (distractors.length < 3) {
+    const rest = allActualPos.filter(p => !picked.has(p));
+    distractors = [...distractors, ...shuffle(rest)].slice(0, 3);
+  }
+  const opts = shuffle([correct, ...distractors.slice(0, 3)]);
+  return `<div class="quiz-card">
+    <div class="q-label">Where does this word typically go in a sentence?</div>
+    <div class="q-sentence" style="font-size:40px;text-align:center;padding:16px 0;font-family:'Lora',serif;font-weight:600">${w.word}</div>
+    <div class="q-subhint" style="margin-bottom:14px">${w.cat} &nbsp;·&nbsp; ${w.reg} &nbsp;·&nbsp; ${w.meaning.split('.')[0]}.</div>
+    <div class="opts-grid">${optHtml(opts,correct,"pos")}</div>
+    <div class="feedback-panel" id="feedback"></div>
+  </div>
+  <div class="quiz-actions"><button class="next-btn" id="next-btn">Next question →</button></div>`;
+}
+
+function handleAnswer(btn,w) {
+  if(quizAnswered)return;
+  quizAnswered=true; totalPracticed++;
+  const isCorrect=btn.dataset.correct==="true";
+  if(isCorrect){quizCorrect++;totalCorrect++;}
+  document.querySelectorAll(".opt-btn").forEach(b=>{
+    b.disabled=true;
+    if(b.dataset.correct==="true") b.classList.add("correct");
+    else if(b===btn&&!isCorrect) b.classList.add("wrong");
+  });
+  const fb=document.getElementById("feedback");
+  if(isCorrect){
+    const posNote = quizMode==="position" ? `<br><br><strong>Position detail:</strong> ${w.pos_detail}` : "";
+    fb.className="feedback-panel show correct";
+    fb.innerHTML=`<div class="fb-top correct">✓ Correct!</div><div class="fb-detail">${w.note}${w.key_diff?`<br><br><strong>Key distinction:</strong> ${w.key_diff}`:""}${posNote}</div><div class="fb-eg">"${w.acad[0]}"</div>`;
+  } else {
+    const ans=quizMode==="meaning"?w.meaning.split('.')[0]+".":quizMode==="meaning2word"||quizMode==="fillblank"?w.word:quizMode==="category"?w.cat:w.pos;
+    const extraNote = quizMode==="position" ? `<br><br><strong>Position detail:</strong> ${w.pos_detail}` : "";
+    fb.className="feedback-panel show wrong";
+    fb.innerHTML=`<div class="fb-top wrong">✗ Not quite.</div><div class="fb-detail">The correct answer is: <strong>${ans}</strong>${extraNote}<br><br>${w.note}</div><div class="fb-eg">"${w.acad[0]}"</div>`;
+  }
+  document.querySelector(".next-btn").classList.add("show");
+  document.getElementById("quiz-score-disp").textContent=`${quizCorrect} / ${quizIdx+1}`;
+  updateStats();
+}
+
+function showResult() {
+  document.getElementById("quiz-bar").style.width="100%";
+  const pct=Math.round(quizCorrect/quizList.length*100);
+  const data=[
+    {score:"90-100",medal:"🏆",title:"Excellent!",sub:"You have a strong grasp of these linking words. Keep it up!"},
+    {score:"70-89",medal:"🎉",title:"Well done!",sub:"You know most of these words well. A bit more practice and you'll master them all."},
+    {score:"50-69",medal:"💪",title:"Good effort!",sub:"You're making progress. Focus on the words you got wrong and try the flashcards."},
+    {score:"0-49",medal:"📚",title:"Keep studying!",sub:"Linking words take time to learn. Review the flashcards and try again — you'll improve!"}
+  ];
+  const d=pct>=90?data[0]:pct>=70?data[1]:pct>=50?data[2]:data[3];
+  document.getElementById("result-medal").textContent=d.medal;
+  document.getElementById("result-title").textContent=d.title;
+  document.getElementById("result-sub").textContent=d.sub;
+  document.getElementById("result-big").textContent=quizCorrect;
+  document.getElementById("result-total").textContent=quizList.length;
+  document.getElementById("quiz-area").innerHTML="";
+  document.getElementById("result-screen").classList.add("show");
+}
+
+// ═══ BROWSE ═══
+function initBrowse() {
+  makeFilters("browse-filters","all",(cat)=>{browseCat=cat;renderBrowse();});
+  renderBrowse();
+}
+function renderBrowse() {
+  const query=(document.getElementById("browse-search").value||"").toLowerCase();
+  let list=getFiltered(browseCat);
+  if(query) list=list.filter(w=>w.word.toLowerCase().includes(query)||w.meaning.toLowerCase().includes(query)||w.note.toLowerCase().includes(query));
+  document.getElementById("browse-count").textContent=`${list.length} word${list.length!==1?"s":""}`;
+  document.getElementById("browse-tbody").innerHTML=list.map((w,i)=>{
+    const cc=CAT_COLORS[w.cat]||"#888";
+    const [rbg,rfg]=REG_COLORS[w.reg]||["#eee","#333"];
+    return `
+      <tr class="data-row" onclick="toggleExpand(${i})">
+        <td><div class="bt-cat-tag"><span class="bt-dot" style="background:${cc}"></span><span style="color:${cc};font-weight:600;font-size:12px">${w.cat}</span></div></td>
+        <td><div class="bt-word">${w.word}</div><div class="bt-pos" style="margin-top:3px">${w.pos}</div></td>
+        <td><span class="bt-reg ${w.reg}">${w.reg}</span></td>
+        <td class="bt-pos">${w.pos_detail}</td>
+        <td class="bt-note">${w.note}</td>
+      </tr>
+      <tr class="expand-row" id="bexp-${i}">
+        <td colspan="5">
+          <div class="expand-inner">
+            <div>
+              <div class="expand-block-title a">Academic examples</div>
+              ${w.acad.map(e=>`<div class="expand-eg-item a">${e}</div>`).join("")}
+            </div>
+            <div>
+              <div class="expand-block-title d">Everyday examples</div>
+              ${w.daily.map(e=>`<div class="expand-eg-item d">${e}</div>`).join("")}
+            </div>
+          </div>
+        </td>
+      </tr>`;
+  }).join("");
+}
+function toggleExpand(i) {
+  const row=document.getElementById("bexp-"+i);
+  const open=row.style.display==="table-row";
+  document.querySelectorAll(".expand-row").forEach(r=>r.style.display="none");
+  if(!open) row.style.display="table-row";
+}
+
+// ═══ POSITION GUIDE ═══
+const GUIDE=[
+  {
+    pos:"Sentence-initial + comma",
+    rule:"Word, + main clause.",
+    explanation:"The linking word starts the sentence, followed by a comma. This is the default position for the majority of linking words. It clearly signals the relationship between the new sentence and the previous one.",
+    words:["Furthermore,","Moreover,","In addition,","Besides,","However,","Nevertheless,","Nonetheless,","On the other hand,","Therefore,","Thus,","Hence,","Consequently,","As a result,","First / Firstly,","Subsequently,","Then / Next,","Finally / Lastly,","Meanwhile,","For example,","For instance,","In particular,","Indeed,","In fact,","Importantly,","Notably,","Above all,","In conclusion,","In summary,","To sum up,","Taken together,","Overall,","In contrast,"],
+    example:'"Furthermore, the model shows strong validity." · "In particular, item 7 showed poor fit." · "Importantly, this pattern replicates across all groups." · "Also, don\'t forget your ID." (informal only)',
+    comma_note:"⚠️ Always put a comma directly after the linking word — no exceptions for this position."
+  },
+  {
+    pos:"Mid-sentence (inserted, between two commas)",
+    rule:"Subject + verb, word, + rest of sentence.",
+    explanation:"The linking word is inserted into the middle of a sentence and surrounded by TWO commas. This adds variety and can create emphasis. Note: the same words that go sentence-initial can often go mid-sentence too.",
+    words:["however,","therefore,","thus,","hence,","consequently,","nevertheless,","nonetheless,","moreover,","furthermore,","indeed,","in fact,","in particular,","notably,","importantly,","above all,","in summary,","overall,","meanwhile,","on the other hand,"],
+    example:'"The model fit was acceptable; the loadings, however, were unexpectedly low." · "Three items were, consequently, removed." · "The results, overall, support the hypothesis."',
+    comma_note:"⚠️ Two commas required — one BEFORE and one AFTER the word. Missing either comma is a punctuation error."
+  },
+  {
+    pos:"Sentence-final",
+    rule:"Main clause + word.",
+    explanation:"Only two linking words naturally end a sentence — and they have OPPOSITE comma rules. 'Overall' needs no comma before it. 'Though' needs a comma before it. This is one of the most commonly confused rules.",
+    words:["overall (no comma before it)","though (comma required before it)"],
+    example:'"The model performed well overall." (no comma) · "The ending was weak, though." (comma required)',
+    comma_note:"⚠️ 'overall' → no comma: 'It went well overall.' | 'though' → comma required: 'It was hard, though.' These two have opposite rules."
+  },
+  {
+    pos:"After main clause (subordinating conjunction)",
+    rule:"Main clause + word + dependent clause.",
+    explanation:"When a subordinating conjunction comes AFTER the main clause, no comma is needed. When it comes BEFORE (starting the sentence), a comma separates the two clauses.",
+    words:["although","though","while","because","since","as","even though"],
+    example:'"We stayed home because it was raining." (no comma) · "Although it rained, we went out." (comma needed when clause comes first)',
+    comma_note:"⚠️ Clause order changes the comma: 'Although X, Y.' (comma) vs 'Y although X.' (no comma)."
+  },
+  {
+    pos:"Directly after the noun it modifies",
+    rule:"Noun + word + examples / exact specification.",
+    explanation:"These words are placed immediately after the noun or noun phrase they are explaining. They cannot start a sentence. 'Such as' introduces examples; 'namely' introduces a complete, exact list.",
+    words:["such as","namely"],
+    example:'"Models such as IRT and CDMs are widely used." · "Three questions, namely reliability, validity, and fairness, were addressed."',
+    comma_note:"⚠️ Neither 'such as' nor 'namely' can start a sentence. 'Namely' is usually preceded by a comma."
+  },
+  {
+    pos:"Preposition phrase (before a noun phrase only)",
+    rule:"Word + noun / noun phrase  (NOT word + subject + verb)",
+    explanation:"These words are prepositions, not conjunctions. They must be followed by a noun or noun phrase — never a full sentence. Using them before a full clause is one of the most common grammar mistakes.",
+    words:["due to","in addition to","because of","in contrast to","as a result of","despite"],
+    example:'"Due to bad weather, the event was cancelled." · "In addition to IRT, CDMs were applied." · "As a result of the delay, the deadline was extended."',
+    comma_note:"⚠️ Test: replace with 'because of' — if it works, a noun must follow. ✗ 'Due to it was raining…' ✓ 'Due to the rain…' or 'Because it was raining…'"
+  },
+  {
+    pos:"Before the main verb (mid-sentence) — 'also' only",
+    rule:"Subject + (auxiliary) + also + main verb.",
+    explanation:"'Also' is unique — its default position is before the main verb (or after the first auxiliary). This makes it different from all other linking words. It can go sentence-initial in informal writing, but this should be avoided in formal academic writing.",
+    words:["also"],
+    example:'"She also completed the survey." · "Participants were also asked to rate their confidence." · "Also, don\'t forget your ID." (informal — avoid in academic writing)',
+    comma_note:"⚠️ Do NOT put 'also' at the end of a sentence: ✗ 'She completed the survey also.' ✓ 'She also completed the survey.'"
+  },
+  {
+    pos:"Correlative pair (two-part structure)",
+    rule:"Not only A, but also B.  /  Both A and B.",
+    explanation:"These expressions always work in pairs — both halves must be present. When 'not only' begins a sentence, the subject and auxiliary verb swap positions (inversion). Missing this inversion is a grammatical error in formal writing.",
+    words:["not only … but also","both … and","either … or","neither … nor"],
+    example:'"Not only did the intervention improve scores, but it also raised confidence." · "Both reliability and validity were assessed."',
+    comma_note:"⚠️ Inversion: 'Not only DID she finish early, but she also…' — auxiliary 'did' must come before subject 'she'."
+  },
+];
+function initGuide() {
+  const g=document.getElementById("guide-grid");
+  g.innerHTML=GUIDE.map(item=>`
+    <div class="guide-card">
+      <div class="guide-pos-tag">${item.pos}</div>
+      <div class="guide-rule" style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);margin-bottom:10px">${item.rule}</div>
+      <div class="guide-explanation">${item.explanation}</div>
+      <div class="guide-words">${item.words.map(w=>`<span class="guide-word-chip">${w}</span>`).join("")}</div>
+      <div class="guide-example">${item.example}</div>
+      <div class="guide-comma-note">${item.comma_note}</div>
+    </div>`).join("");
+}
+
+// INIT
+initFlash(); initQuiz(); initBrowse(); initGuide();
+</script>
+</body>
+</html>
