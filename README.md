@@ -59,7 +59,7 @@ An interactive single-page web app for learning and practicing English linking w
 
 ## Live Demo
 
-Deployed via GitHub Pages: [https://zhouwenjie26.github.io/Linking-Words-Practice/](https://zhouwenjie26.github.io/Linking-Words-Practice/)
+Deployed via GitHub Pages: [https://zhouwenjie26.github.io/Linking_Words_Practice/](https://zhouwenjie26.github.io/Linking_Words_Practice/)
 
 ## License
 
